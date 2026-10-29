@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nascary</title>
+
+  <!-- Tipografías de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===================== BASE ===================== */
+    :root {
+      --negro: #000;
+      --blanco: #fff;
+      --gris: #f5f5f5;
+      --fuente-titulos: 'Baloo 2', sans-serif;
+      --fuente-texto: 'Poppins', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--fuente-texto); background: var(--blanco); color: var(--negro); }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; }
+
+    /* ===================== HEADER ===================== */
+    .header {
+      background: var(--negro);
+      color: var(--blanco);
+      height: 70px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header__logo img { height: 50px; width: auto; }  /* <- logo pequeño */
+
+    .header__nav { display: flex; gap: 40px; }
+    .header__nav a {
+      font-family: var(--fuente-titulos);
+      font-weight: 700;
+      font-size: 15px;
+      transition: opacity .2s;
+    }
+    .header__nav a:hover { opacity: .6; }
+
+    .header__iconos { display: flex; gap: 18px; align-items: center; }
+    .header__iconos button {
+      background: none;
+      border: none;
+      color: var(--blanco);
+      display: flex;
+      transition: opacity .2s;
+    }
+    .header__iconos button:hover { opacity: .6; }
+    .header__iconos svg { width: 18px; height: 18px; }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;   /* mitad y mitad */
+      min-height: calc(100vh - 70px);
+    }
+    .hero__izq {
+      background: var(--negro);
+      color: var(--blanco);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 60px 30px;
+      text-align: center;
+    }
+    .hero__logo { margin: auto 0; width: 85%; max-width: 480px; }  /* logo grande */
+
+    .hero__texto { font-size: 20px; font-weight: 300; letter-spacing: 1px; margin-bottom: 16px; }
+
+    /* Botón con cambio de color al pasar el cursor */
+    .hero__boton {
+      background: transparent;
+      color: var(--blanco);
+      border: 1px solid var(--blanco);
+      border-radius: 30px;
+      padding: 10px 34px;
+      font-size: 15px;
+      letter-spacing: 1px;
+      transition: background .3s, color .3s;
+    }
+    .hero__boton:hover {
+      background: var(--blanco);   /* cambia a blanco */
+      color: var(--negro);         /* texto negro */
+    }
+
+    .hero__der { background: var(--gris); }
+   .hero__der img,
+.hero__der video { width: 100%; height: 100%; object-fit: cover; 
+	  }
+
+    /* ===================== MÓVIL ===================== */
+    @media (max-width: 800px) {
+      .header { padding: 0 16px; }
+      .header__nav { display: none; }   /* luego añadimos menú hamburguesa si quieres */
+      .hero { grid-template-columns: 1fr; }
+      .hero__izq { min-height: 70vh; }
+      .hero__der { height: 60vh; }
+    }
+
+    /* >>> AQUÍ PEGAS EL CSS DE LA SIGUIENTE SECCIÓN <<< */
+ /* ===================== CATEGORÍAS DESTACADAS ===================== */
+.categorias {
+  background: var(--blanco);
+  padding: 30px 24px 50px;
+}
+.categorias__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+.categorias__titulo { font-family: 'Playfair Display', serif; font-weight: 400; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.categorias__titulo .chico { font-size: 26px; text-transform: uppercase; letter-spacing: 1px; }
+.categorias__titulo .grande { font-size: 56px; }
+
+.categorias__ver-todo {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  border-bottom: 1px solid var(--negro);
+  padding-bottom: 2px;
+  transition: opacity .2s;
+}
+.categorias__ver-todo:hover { opacity: .5; }
+
+/* Rejilla de 3 tarjetas */
+.categorias__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+}
+.categoria { display: block; text-align: center; }
+
+/* Contenedor de imagen: apila las 2 fotos una encima de la otra */
+.categoria__img {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: var(--gris);   /* color del recuadro mientras no hay imagen */
+  overflow: hidden;
+}
+.categoria__img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity .5s ease;
+}
+/* La segunda foto (otro ángulo) empieza invisible */
+.categoria__img .img-hover { opacity: 0; }
+/* Al pasar el cursor: aparece la segunda y se oculta la primera */
+.categoria:hover .img-hover { opacity: 1; }
+.categoria:hover .img-principal { opacity: 0; }
+
+.categoria__nombre {
+  display: block;
+  font-family: 'Lilita One', sans-serif;
+  font-size: 32px;
+  margin-top: 14px;
+  transition: opacity .2s;
+}
+.categoria:hover .categoria__nombre { opacity: .6; }
+/* ===================== LO NUEVO ===================== */
+/* ===================== BANNERS NUEVA COLECCIÓN ===================== */
+.banners {
+  background: var(--negro);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 60px 0;              /* espacio negro arriba y abajo */
+}
+.banner {
+  position: relative;
+  aspect-ratio: 1 / 1.1;
+  overflow: hidden;
+  background: #222;             /* gris oscuro mientras no hay imagen */
+}
+.banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.banner:hover img { transform: scale(1.04); }
+
+.banner__contenido {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  text-align: center;
+  color: var(--blanco);
+}
+.banner__texto {
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 6px rgba(0,0,0,.6);
+}
+.banner__boton {
+  background: transparent;
+  color: var(--blanco);
+  border: 1px solid var(--blanco);
+  border-radius: 30px;
+  padding: 7px 28px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  transition: background .3s, color .3s;
+}
+.banner__boton:hover {
+  background: var(--blanco);
+  color: var(--negro);
+}
+/* ===================== POR ESTILO ===================== */
+.estilo {
+  background: var(--blanco);
+  padding: 40px 24px 60px;
+  text-align: center;
+}
+.estilo__titulo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 48px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+}
+
+/* Botones Superior / Inferior / Combinado */
+.estilo__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+.estilo__tab {
+  background: none;
+  border: none;
+  font-family: 'Lilita One', sans-serif;
+  font-size: 30px;
+  color: #999;                 /* gris cuando NO está activo */
+  transition: color .25s;
+}
+.estilo__tab:hover { color: #555; }
+.estilo__tab.activo { color: var(--negro); }   /* negro cuando está activo */
+
+/* Paneles: solo se ve el que tiene la clase "activo" */
+.estilo__panel { display: none; }
+.estilo__panel.activo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  animation: aparecer .4s ease;
+}
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.producto { display: block; text-align: center; }
+.producto__img {
+  aspect-ratio: 1 / 1.33;
+  background: #b5b3b0;         /* gris mientras no hay imagen */
+  overflow: hidden;
+}
+.producto__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+.producto:hover .producto__img img { transform: scale(1.04); }
+.producto__nombre {
+  display: block;
+  font-family: 'Playfair Display SC', serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 20px auto 8px;
+  max-width: 260px;
+}
+.producto__precio {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+}
+
+@media (max-width: 900px) {
+  .estilo__titulo { font-size: 34px; }
+  .estilo__tabs { gap: 24px; }
+  .estilo__tab { font-size: 22px; }
+  .estilo__panel.activo { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .banners { grid-template-columns: 1fr; padding: 40px 0; }
+}
+	  .nuevo {
+  background: var(--negro);
+  color: var(--blanco);
+  padding: 20px 16px 50px;
+}
+.nuevo__titulo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 48px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.nuevo__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.prenda { display: block; text-align: center; }
+.prenda__img {
+  aspect-ratio: 1 / 1.1;
+  background: #9a9a98;      /* gris mientras no hay imagen */
+  overflow: hidden;
+}
+.prenda__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+.prenda:hover .prenda__img img { transform: scale(1.05); }
+.prenda__nombre {
+  display: block;
+  font-family: 'Playfair Display SC', serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: .5px;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .nuevo__titulo { font-size: 34px; }
+  .nuevo__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 800px) {
+  .categorias__titulo .chico { font-size: 18px; }
+  .categorias__titulo .grande { font-size: 38px; }
+  .categorias__grid { grid-template-columns: 1fr; gap: 28px; }
+
+} /* ===================== VIDEO DEL HERO (pantalla completa) ===================== */
+.hero { position: relative; overflow: hidden; }
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  clip-path: inset(0 0 0 50%);
+  transition: clip-path 1.2s ease, opacity .6s ease;
+}
+.hero.video-activo .hero__video {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+}
+@media (max-width: 800px) {
+  .hero__video { clip-path: none; }
+}
+	/* ===================== TIPOGRAFÍA ÚNICA ===================== */
+*, *::before, *::after {
+  font-family: 'Myanmar Sans Pro', sans-serif !important;
+} /* ===================== NOMBRES DE PRENDAS: MISMO TAMAÑO ===================== */
+.nuevo .prenda__nombre,
+.estilo .producto__nombre {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0 !important;
+} /* ===================== "CATEGORIA DESTACADAS": MISMO TAMAÑO ===================== */
+.categorias__titulo .chico,
+.categorias__titulo .grande {
+  font-size: 56px;      /* <- cambia este número para que ambas cambien a la vez */
+}
+
+@media (max-width: 800px) {
+  .categorias__titulo .chico,
+  .categorias__titulo .grande {
+    font-size: 38px;    /* tamaño en celular */
+  }
+}/* ===================== RESEÑAS ===================== */
+.resenas {
+  background: #d9d9d9;
+  padding: 40px 24px 80px;
+}
+.resenas__contenido { max-width: 900px; margin: 0 auto; }
+
+.resenas__titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  font-size: 32px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.resenas__estrellas-vacias {
+  font-size: 18px;
+  letter-spacing: 4px;
+}
+
+.resenas__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.resena { background: var(--blanco); }
+
+/* Imagen con las estrellas montadas en el borde inferior */
+.resena__img {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: #9a9a98;           /* gris mientras no hay imagen */
+}
+.resena__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.resena__estrellas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: #ffd400;                /* amarillo */
+  -webkit-text-stroke: .6px #000;
+  line-height: 1;
+}
+
+/* Cuadro blanco para el texto de la reseña */
+.resena__texto {
+  padding: 22px 14px 18px;
+  min-height: 90px;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+.resena__nombre { display: block; font-weight: 700; margin-bottom: 4px; }
+
+@media (max-width: 900px) {
+  .resenas__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .resenas__grid { grid-template-columns: 1fr; }
+  .resenas__titulo { font-size: 26px; }
+}</style> 
+	
+</head> 
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header">
+    <a href="#" class="header__logo">
+     <img src="imagen/logo.png" alt="Nascary">
+    </a>
+
+    <nav class="header__nav">
+      <a href="#">Nueva mercha</a>
+      <a href="#">Descuentos</a>
+      <a href="#">Camisetas</a>
+      <a href="#">Ofertas</a>
+    </nav>
+
+    <div class="header__iconos">
+      <!-- Buscar -->
+      <button aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <!-- Usuario -->
+      <button aria-label="Usuario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      </button>
+      <!-- Carrito -->
+      <button aria-label="Carrito">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.5 11h10l2-8H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
+      </button> 
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+	<!-- ===================== HERO ===================== -->
+<section class="hero" id="hero">
+  <div class="hero__izq">
+    <img class="hero__logo" src="imagen/isotipo.png" alt="Nascary">
+    <div>
+      <p class="hero__texto">NUEVA COLECCION</p>
+      <button class="hero__boton">DESCUBRELA YA</button>
+    </div>
+  </div>
+
+  <!-- Imagen quieta (la que se ve al inicio) -->
+  <div class="hero__der">
+    <img src="imagen/fondo%20seccion%202.jpeg" alt="Nueva colección">
+  </div>
+
+  <!-- Video: empieza escondido y se activa a los 5 segundos -->
+  <video class="hero__video" id="heroVideo" muted playsinline preload="auto">
+    <source src="imagen/seccionvideo.mp4.mp4" type="video/mp4">
+  </video>
+</section>
+
+  <!-- >>> AQUÍ PEGAS EL HTML DE LA SIGUIENTE SECCIÓN <<< -->
+<!-- ===================== CATEGORÍAS DESTACADAS ===================== -->
+<section class="categorias">
+  <div class="categorias__cabecera">
+    <h2 class="categorias__titulo">
+      <span class="chico">Categoria</span>
+      <span class="grande">DESTACADAS&nbsp;</span>
+    </h2>
+  <a href="catalogo.html" class="categorias__ver-todo">Ver todo</a>
+  </div>
+
+  <div class="categorias__grid">
+
+    <!-- BUSOS -->
+    <a href="#" class="categoria">
+      <div class="categoria__img">
+        <img class="img-principal" src="imagen/Maniquí cromado con jersey gráfico blanco y negro.png" alt="Busos">        <!-- FOTO 1 -->
+        <img class="img-hover" src="imagen/Jersey blanco y negro con número 25.png" alt="Busos otro ángulo"> <!-- FOTO 2 (otro ángulo) -->
+      </div>
+      <span class="categoria__nombre">Busos</span>
+    </a>
+
+    <!-- CONJUNTOS -->
+    <a href="#" class="categoria">
+      <div class="categoria__img">
+        <img class="img-principal" src="imagen/Maniquí cromado con chándal futurista.png" alt="Conjuntos">
+        <img class="img-hover" src="imagen/Chándal negro con detalles blancos.png" alt="Conjuntos otro ángulo">
+      </div>
+      <span class="categoria__nombre">Conjuntos</span>
+    </a>
+
+    <!-- INFERIORES -->
+    <a href="#" class="categoria">
+      <div class="categoria__img">
+        <img class="img-principal" src="imagen/Maniquí Cromado con Shorts SMILE.png" alt="Inferiores">
+        <img class="img-hover" src="imagen/Bermudas vaqueras góticas con gráficos rojos.png" alt="Inferiores otro ángulo">
+      </div>
+      <span class="categoria__nombre">Inferiores</span>
+    </a>
+  </div>
+</section>
+	<!-- ===================== LO NUEVO ===================== -->
+<section class="nuevo">
+  <h2 class="nuevo__titulo">Lo nuevo</h2>
+
+  <div class="nuevo__grid">
+
+    <a href="#" class="prenda">
+      <div class="prenda__img"><img src="imagen/Sudadera deportiva negra y granate.png" alt="Sudadera deportiva negra y granate"></div>
+      <span class="prenda__nombre">Sudadera deportiva<br>negra y granate</span>
+    </a>
+
+    <a href="#" class="prenda">
+      <div class="prenda__img"><img src="imagen/Sudadera negra con grafitis blancos.png" alt="Buzo con capucha grafiti"></div>
+      <span class="prenda__nombre">Camiseta azul<br>con ángel gótico</span>
+    </a>
+
+    <a href="#" class="prenda">
+      <div class="prenda__img"><img src="imagen/Camiseta azul con ángel gótico.png" alt="Camiseta azul con ángel gótico"></div>
+      <span class="prenda__nombre">Camiseta azul<br>con ángel gótico</span>
+    </a>
+
+    <a href="#" class="prenda">
+      <div class="prenda__img"><img src="imagen/Bermudas vaqueras con alas y cadenas.png" alt="Bermudas vaqueras con alas y cadenas"></div>
+      <span class="prenda__nombre">Bermudas vaqueras<br>con alas y cadenas</span>
+    </a>
+
+    <a href="#" class="prenda">
+      <div class="prenda__img"><img src="imagen/Camiseta urbana MONEY con diseño grunge.png" alt="Camiseta urbana Money"></div>
+      <span class="prenda__nombre">Camiseta urbana<br>MONEY<br>con diseño grunge</span>
+    </a>
+
+  </div>
+</section>
+	<!-- ===================== BANNERS NUEVA COLECCIÓN ===================== -->
+<section class="banners">
+
+  <div class="banner">
+    <img src="imagen/descarga (3).jpeg" alt="Nueva colección 1">   <!-- FOTO IZQUIERDA -->
+    <div class="banner__contenido">
+      <p class="banner__texto">NUEVA COLECCION</p>
+      <button class="banner__boton">DESCUBRELA YA</button>
+    </div>
+  </div>
+
+  <div class="banner">
+    <img src="imagen/descarga (2).jpeg" alt="Nueva colección 2">   <!-- FOTO DERECHA -->
+    <div class="banner__contenido">
+      <p class="banner__texto">NUEVA COLECCION</p>
+      <button class="banner__boton">DESCUBRELA YA</button>
+    </div>
+  </div>
+</section>
+	<!-- ===================== POR ESTILO ===================== -->
+<section class="estilo">
+  <h2 class="estilo__titulo">Por estilo</h2>
+
+  <div class="estilo__tabs">
+    <button class="estilo__tab activo" data-panel="superior">Superior</button>
+    <button class="estilo__tab" data-panel="inferior">inferior</button>
+    <button class="estilo__tab" data-panel="combinado">combinado</button>
+  </div>
+
+  <!-- ========== SUPERIOR ========== -->
+  <div class="estilo__panel activo" id="superior">
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Camiseta deportiva azul marino con 25.png" alt="Camiseta deportiva azul marino"></div>
+      <span class="producto__nombre">Camiseta deportiva<br>azul marino</span>
+      <span class="producto__precio">$140.000</span>
+    </a>
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Jersey blanco y negro con número 25.png" alt="Camiseta deportiva blanco y negro"></div>
+      <span class="producto__nombre">Camiseta deportiva<br>blanco y negro</span>
+      <span class="producto__precio">$140.000</span>
+    </a>
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Camiseta Nueva Zelanda en blanco y negro (1).png" alt="Camiseta Zelanda en blanco y negro"></div>
+      <span class="producto__nombre">Camiseta Zelanda<br>en blanco y negro</span>
+      <span class="producto__precio">$140.000</span>
+    </a>
+  </div>
+
+  <!-- ========== INFERIOR ========== -->
+  <div class="estilo__panel" id="inferior">
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Pantalón corto cargo camuflaje “Dreamin’ on Race”.png" alt="Pantalón corta cargo camuflaje “Dreamin’ on Race"></div>
+      <span class="producto__nombre">Pantalón corto cargo camuflaje “Dreamin’ on Race” 1</span>
+      <span class="producto__precio">$180.000</span>
+    </a>
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Bermudas vaqueras con alas y cadenas.png" alt="imagen/Bermudas vaqueras con alas y cadenas"></div>
+      <span class="producto__nombre">Bermudas vaqueras<br>con alas y cadenas</span>
+      <span class="producto__precio">$180.000</span>
+    </a>
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Bermudas vaqueras góticas con gráficos rojos.png" alt="Bermudas vaqueras góticas con gráficos rojos"></div>
+      <span class="producto__nombre">vermuda vaquera gotica<br> graficos rojos</span>
+      <span class="producto__precio">$000.000</span>
+    </a>
+  </div>
+
+  <!-- ========== COMBINADO ========== -->
+  <div class="estilo__panel" id="combinado">
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Conjunto rosa Cortez sobre fondo gris.png" alt="Conjunto rosa Cortez sobre fondo gris"></div>
+      <span class="producto__nombre">Conjunto japones rosa</span>
+      <span class="producto__precio">$300.000</span>
+    </a>
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Conjunto negro de chándal graffiti.png" alt="Conjunto negro de chándal graffiti"></div>
+      <span class="producto__nombre">Conjunto negro graffiti</span>
+      <span class="producto__precio">$300.000</span>
+    </a>
+    <a href="#" class="producto">
+      <div class="producto__img"><img src="imagen/Chándal técnico Saint Dept. en gris y negro.png" alt="Chándal técnico Saint Dept. en gris y negro"></div>
+      <span class="producto__nombre">Conjunto deportivo <br>gris y negro</span>
+      <span class="producto__precio">$000.000</span>
+    </a>
+  </div>
+</section>
+	<!-- ===================== RESEÑAS ===================== -->
+<section class="resenas">
+  <div class="resenas__contenido">
+
+    <h2 class="resenas__titulo">
+      <span class="resenas__estrellas-vacias" aria-hidden="true">☆☆☆☆☆</span>
+      Reseñas
+    </h2>
+
+    <div class="resenas__grid">
+
+      <article class="resena">
+        <div class="resena__img">
+          <img src="" alt="Conjunto negro CRT2">   <!-- PON LA RUTA DE LA IMAGEN -->
+          <div class="resena__estrellas" aria-label="5 estrellas">★★★★★</div>
+        </div>
+        <p class="resena__texto">
+          <span class="resena__nombre">Nombre del cliente</span>
+          Escribe aquí la reseña.
+        </p>
+      </article>
+
+      <article class="resena">
+        <div class="resena__img">
+          <img src="imagen/Pantalón corto cargo camuflaje “Dreamin’ on Race”.png" alt="Pantalón corto cargo camuflaje">
+          <div class="resena__estrellas" aria-label="5 estrellas">★★★★★</div>
+        </div>
+        <p class="resena__texto">
+          <span class="resena__nombre">Nombre del cliente</span>
+          Escribe aquí la reseña.
+        </p>
+      </article>
+
+      <article class="resena">
+        <div class="resena__img">
+          <img src="imagen/Chándal técnico Saint Dept. en gris y negro.png" alt="Chándal técnico Saint Dept.">
+          <div class="resena__estrellas" aria-label="5 estrellas">★★★★★</div>
+        </div>
+        <p class="resena__texto">
+          <span class="resena__nombre">Nombre del cliente</span>
+          Escribe aquí la reseña.
+        </p>
+      </article>
+
+      <article class="resena">
+        <div class="resena__img">
+          <img src="" alt="Camiseta deportiva gris">   <!-- PON LA RUTA DE LA IMAGEN -->
+          <div class="resena__estrellas" aria-label="5 estrellas">★★★★★</div>
+        </div>
+        <p class="resena__texto">
+          <span class="resena__nombre">Nombre del cliente</span>
+          Escribe aquí la reseña.
+        </p>
+      </article>
+
+    </div>
+  </div>
+</section>
+<script>
+  // ---- Botones Superior / Inferior / Combinado ----
+  const tabs = document.querySelectorAll('.estilo__tab');
+  const paneles = document.querySelectorAll('.estilo__panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('activo'));
+      paneles.forEach(p => p.classList.remove('activo'));
+      tab.classList.add('activo');
+      document.getElementById(tab.dataset.panel).classList.add('activo');
+    });
+  });
+
+  // ---- Video del hero: a los 5 segundos se activa y llena la pantalla ----
+  const hero  = document.getElementById('hero');
+  const video = document.getElementById('heroVideo');
+
+  setTimeout(() => {
+    video.play()
+      .then(() => hero.classList.add('video-activo'))
+      .catch(err => console.log('No se pudo reproducir el video:', err));
+  }, 5000);
+
+  // Cuando el video termina, vuelve a la imagen quieta
+  video.addEventListener('ended', () => {
+    hero.classList.remove('video-activo');          // se encoge y se desvanece
+    setTimeout(() => { video.currentTime = 0; }, 1300);  // lo deja listo en el inicio
+  });
+</script>
+</body>
+</html>
